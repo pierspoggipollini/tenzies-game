@@ -1,0 +1,80 @@
+.die-container {
+  display: grid;
+  grid-template: auto auto / repeat(5, 1fr);
+  gap: 30px;
+  margin-bottom: 1.75rem;
+}
+
+.die-face {
+  padding: 4px;
+  background-color: tomato;
+  width: 104px;
+  height: 104px;
+  border-radius: 10%;
+}
+
+.face {
+  display: grid;
+  grid-template-areas:
+    "a . c"
+    "e g f"
+    "d . b";
+  padding: 4px;
+  background-color: #ffff;
+  width: 104px;
+  height: 104px;
+  border-radius: 10%;
+  cursor: pointer;
+}
+
+.pip {
+  display: block;
+  align-self: center;
+  justify-self: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #333;
+  box-shadow: inset 0 3px #111, inset 0 -3px #555;
+}
+
+.pip:nth-child(2) {
+  grid-area: b;
+}
+.pip:nth-child(3) {
+  grid-area: c;
+}
+.pip:nth-child(4) {
+  grid-area: d;
+}
+.pip:nth-child(5) {
+  grid-area: e;
+}
+.pip:nth-child(6) {
+  grid-area: f;
+}
+.pip:nth-child(odd):last-child {
+  grid-area: g;
+}
+
+@media (max-width: 45rem) {
+  .die-container {
+    grid-template: auto / repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .die-face {
+    width: 74px;
+    height: 74px;
+  }
+
+  .face {
+    width: 74px;
+    height: 74px;
+  }
+
+  .pip {
+    width: 14px;
+    height: 14px;
+  }
+}

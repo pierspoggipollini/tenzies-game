@@ -2,46 +2,59 @@ import { useEffect, useState } from "react";
 import Die from "./components/Die";
 import { nanoid } from "nanoid";
 import Confetti from "react-confetti";
+import { faDice, faStopwatch } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function App() {
   const [dice, setDice] = useState(allNewDice());
   const [tenzies, setTenzies] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(false);
-  const [time, setTime] = useState([]);
+
   const [count, setCount] = useState(0);
+  const [bestCount, setBestCount] = useState([]);
 
-  /* Create the seconds */
+  const [time, setTime] = useState(0);
+  const [active, setActive] = useState(false);
+
+  const [bestTime, setBestTime] = useState([]);
+
+  // Create the time
   useEffect(() => {
-    let interval = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
+    let intervall = null;
+    if (active) {
+      intervall = setInterval(() => {
+        setTime((time) => time + 1);
       }, 1000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval);
+    } else if (!active && time !== 0) {
+      clearInterval(intervall);
     }
-    return () => clearInterval(interval);
-  }, [isActive, seconds]);
+    return () => {
+      clearInterval(intervall);
+    };
+  }, [active]);
 
-  /* Set the state active to true so the time start  */
-  function toggle() {
-    setIsActive(true);
+  function toggleActive() {
+    setActive(true);
   }
 
-  /* Set reset function to stop the seconds and set not active */
   function reset() {
-    setSeconds(0);
-    setIsActive(false);
+    setActive(false);
+    setTime(0);
   }
 
-  /*  Add seconds to the state */
-  function addNumber(seconds) {
-    setTime((prevSeconds) => [...prevSeconds, seconds]);
-  }
+  //Separate from the time, minutes and seconds
+  const total = time;
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
 
-  /* Save the minimun numbers (seconds) from the array of time */
-  const minNumber = Math.min(...time);
+  //Show the best time in minutes and seconds
+  const min = Math.min(...bestTime);
+  const totalTime = min;
+  const totalMinutes = Math.floor(totalTime / 60);
+  const totalSeconds = totalTime % 60;
+
+  //Set the variable to show the best count from the best count state
+  const minBestCount = Math.min(...bestCount.filter((bcount) => bcount !== 0));
 
   /*  Create the victory */
   useEffect(() => {
@@ -51,14 +64,17 @@ function App() {
 
     if (allHelded && allElement) {
       setTenzies(true);
-      setIsActive(false);
-      addNumber(seconds);
-      localStorage.setItem("BestTime", minNumber);
-    }
-  }, [dice, minNumber]);
+      setActive(false);
+      setTime(0);
+      setBestTime((prevBest) => [...prevBest, time]);
 
-  /* Get the bestTime */
-  const bestTime = localStorage.getItem("BestTime");
+      setBestCount((prevCount) => [...prevCount, count]);
+      localStorage.setItem("Current Time", `${minutes}:${seconds}`);
+      localStorage.setItem("Best Time", `${totalMinutes}:${totalSeconds}`);
+      localStorage.setItem("Best Count", bestCount);
+    }
+  }, [dice]); //
+
 
   /* Generate the new Die */
   function generateNewDie() {
@@ -80,7 +96,7 @@ function App() {
 
   /* keep the color or hide */
   function holdDice(id) {
-    toggle();
+    toggleActive();
     setDice((oldDice) =>
       oldDice.map((die) => {
         return die.id === id ? { ...die, isHeld: !die.isHeld } : die;
@@ -117,32 +133,47 @@ function App() {
 
   return (
     <main>
-      {tenzies && <Confetti width={800} />}
+      {tenzies && <Confetti width={800}/>}
       <div className="title-container">
-        <h1 className="title">Tenzies</h1>
+        <div className="tenzies-title">
+          <FontAwesomeIcon className="dice-icon fa-shake" icon={faDice} />
+          <h1 className="title">Tenzies</h1>
+          <FontAwesomeIcon className="dice-icon fa-shake" icon={faDice} />
+        </div>
         <p className="instructions">
           Roll until all dice are the same. Click each die to freeze it at its
           current value between rolls.
         </p>
       </div>
+
       <div className="die-container">{diceElements}</div>
-      <div className="menu">
-        <button className="roll-dice" onClick={rollDice}>
-          {tenzies ? "New Game" : "Roll"}
-        </button>
-        <div className="tenzies-time">{seconds}</div>
-      </div>
+      <button className="roll-dice" onClick={rollDice}>
+        {tenzies ? "New Game" : "Roll"}
+      </button>
       <div className="track-record">
-        <p>
-          {time[0]
-            ? `Your best time is ${bestTime} seconds`
-            : `Your best time will be shown here`}
-        </p>
-        <p>Your count of roll are {count}</p>
+        <div className="tenzies-time">
+          <FontAwesomeIcon className="time-icon" icon={faStopwatch} />
+          <p>{`${minutes}:${seconds}`}</p>
+        </div>
+        <div className="best">
+          <span className="emoji">🏆</span>
+          <p>
+            {bestTime.length === 0
+              ? "Play now to show your best time"
+              : `${totalMinutes}:${totalSeconds}`}
+          </p>
+        </div>
+        <div className="best">
+          <span className="emoji">🤩</span>
+          <p>
+            {bestCount.length === 0
+              ? "Play now to show your best count"
+              : minBestCount}
+          </p>
+        </div>
       </div>
     </main>
   );
 }
-
 
 export default App;
