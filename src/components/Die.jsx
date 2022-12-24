@@ -1,5 +1,6 @@
 import React from "react";
 import './Die.css'
+import { motion } from "framer-motion";
 
 const Die = ({ value, isHeld, holdDice }) => {
   const styles = {
@@ -9,9 +10,15 @@ const Die = ({ value, isHeld, holdDice }) => {
   const Pip = () => <span  className="pip" />;
 
   const Face = ({ children }) => (
-    <div style={styles} onClick={holdDice} className="face">
+    <motion.div
+      whileTap={{ scale: 0.8 }}
+      
+      style={styles}
+      onClick={holdDice}
+      className="face"
+    >
       {children}
-    </div>
+    </motion.div>
   );
 
     let pips = Number.isInteger(value)

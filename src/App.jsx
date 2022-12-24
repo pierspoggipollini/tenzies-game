@@ -5,6 +5,7 @@ import Confetti from "react-confetti";
 import { faDice, faStopwatch } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { motion } from "framer-motion";
 
 function App() {
   const [dice, setDice] = useState(allNewDice());
@@ -147,9 +148,9 @@ function App() {
       </div>
 
       <div className="die-container">{diceElements}</div>
-      <button className="roll-dice" onClick={rollDice}>
+      <motion.button whileTap={{scale: 0.9}} className="roll-dice" onClick={rollDice}>
         {tenzies ? "New Game" : "Roll"}
-      </button>
+      </motion.button>
       <div className="track-record">
         <div className="tenzies-time">
           <FontAwesomeIcon className="time-icon" icon={faStopwatch} />
